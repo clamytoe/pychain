@@ -105,7 +105,6 @@ ENV/
 
 # pychain
 key_gen.py
-config.py
 
 # pytest
 .pytest_cache/

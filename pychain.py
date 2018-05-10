@@ -10,6 +10,7 @@ REQUIRE_POW = False
 
 
 class Block:
+
     def __init__(self, index, timestamp, data, previous_hash):
         self.index = index
         self.timestamp = timestamp
@@ -20,18 +21,19 @@ class Block:
     def hash_block(self):
         key = PYCHAIN_PUBKEY.encode()
         h = hashlib.blake2b(digest_size=AUTH_SIZE, key=key)
-        payload = f'{self.index},{self.timestamp},{self.data},' \
-                  f'{self.previous_hash}'
+        payload = f"{self.index},{self.timestamp},{self.data}," \
+                  f"{self.previous_hash} "
         h.update(payload.encode())
 
         return h.hexdigest()
 
     def __repr__(self):
-        return f'<Block index: {self.index}, timestamp: {self.timestamp}, ' \
-               f'hash: {self.hash}>'
+        return f"Block({self.index}, {self.timestamp}, {self.data}, " \
+               f"{self.previous_hash})"
 
 
 class Blockchain:
+
     def __init__(self, blockchain=None, nodes=None, transactions=None):
         self.blockchain = blockchain if blockchain else []
         self.nodes = nodes if nodes else []
@@ -40,10 +42,10 @@ class Blockchain:
         self.create_genesis_block()
 
     def add_block(self, proof, transaction):
-        trans = json.loads(transaction.trans)
-        valid = self.validate_transaction(trans)
+        valid = transaction.validate()
         if valid:
-            data = {'proof-of-work': proof, 'transaction': trans}
+            trans = json.loads(transaction.trans)
+            data = {"proof-of-work": proof, "transaction": trans}
             index = 0 if len(self.blockchain) == 0 else self.next_index
             prev_hash = 0 if len(self.blockchain) == 0 else self.previous_hash
             block = Block(index, datetime.now(), data, prev_hash)
@@ -70,14 +72,18 @@ class Blockchain:
         # index zero and arbitrary previous hash
         if not self.blockchain:
             proof = self.proof_of_work
-            trans = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY,
-                                'Genesis block', 1000)
+            trans = Transaction(
+                PYCHAIN_PUBKEY,
+                PYCHAIN_PUBKEY,
+                "Genesis block",
+                1000,
+            )
             self.add_block(proof, trans)
 
     def validate_chain(self):
         for block in self.blockchain:
             # skip over genesis block but set it as the previous block
-            if block.data['transaction']['comment'] == 'Genesis block':
+            if block.data["transaction"]["comment"] == "Genesis block":
                 previous_block = block
                 continue
             else:
@@ -92,22 +98,19 @@ class Blockchain:
             previous_block = block
         return True
 
-    @staticmethod
-    def validate_transaction(trans):
-        return True if (trans["from"] and trans["to"] and trans["comment"]
-                        and trans["amount"]) else False
-
     @property
     def get_blocks(self):
-        blocklist = ''
+        blocklist = ""
 
         for block in self.blockchain:
-            assembled = json.dumps({
-                'index': str(block.index),
-                'timestamp': str(block.timestamp),
-                'data': str(block.data),
-                'hash': block.hash
-            })
+            assembled = json.dumps(
+                {
+                    "index": str(block.index),
+                    "timestamp": str(block.timestamp),
+                    "data": str(block.data),
+                    "hash": block.hash,
+                }
+            )
             blocklist += assembled
 
         return blocklist
@@ -122,12 +125,15 @@ class Blockchain:
 
     @property
     def last_proof(self):
-        return self.last_block.data['proof-of-work']
+        return self.last_block.data["proof-of-work"]
 
     @property
     def other_chains(self):
-        nodes_ = [json.loads(requests.get(url + '/blocks').content) for url in
-                  self.nodes]
+        nodes_ = [
+            json.loads(
+                requests.get(url + "/blocks").content
+            ) for url in self.nodes
+        ]
         return nodes_
 
     @property
@@ -140,6 +146,7 @@ class Blockchain:
 
 
 class Transaction:
+
     def __init__(self, sender, receiver, comment, amount):
         self.sender = sender
         self.receiver = receiver
@@ -148,5 +155,20 @@ class Transaction:
 
     @property
     def trans(self):
-        return json.dumps({'from': self.sender, 'to': self.receiver,
-                           'comment': self.comment, 'amount': self.amount})
+        return json.dumps(
+            {
+                "from": self.sender,
+                "to": self.receiver,
+                "comment": self.comment,
+                "amount": self.amount,
+            }
+        )
+
+    def validate(self):
+        trans = json.loads(self.trans)
+        return True if (
+            trans["from"] and
+            trans["to"] and
+            trans["comment"] and
+            trans["amount"]
+        ) else False
