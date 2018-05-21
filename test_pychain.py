@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from pychain import Block, Blockchain, Transaction
 from config import PYCHAIN_PUBKEY
@@ -11,6 +13,27 @@ def pc():
 @pytest.fixture
 def trans1():
     return Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY, "Test block #1", 10)
+
+
+def test_block():
+    index = 99999
+    timestamp = datetime.now()
+    trans = Transaction(
+                PYCHAIN_PUBKEY,
+                PYCHAIN_PUBKEY,
+                "Test block",
+                1000,
+            )
+    data = {"proof-of-work": 9, "transaction": trans}
+    previous_hash = "test block hash"
+    block = Block(index, timestamp, data, previous_hash)
+    assert block.index == 99999
+    assert isinstance(block.timestamp, datetime)
+    assert isinstance(block.data, dict)
+    assert block.data["proof-of-work"] == 9
+    assert isinstance(block.data["transaction"], Transaction)
+    assert block.previous_hash == "test block hash"
+    assert len(block.hash) == 64
 
 
 def test_blockchain(pc):
@@ -50,4 +73,4 @@ def test_validate_chain(pc, trans1):
     pc.add_block(pc.proof_of_work, trans2)
     trans3 = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY, "Test block #3", 15)
     pc.add_block(pc.proof_of_work, trans3)
-    assert pc.validate_chain() == True
+    assert pc.validate_chain() is True
