@@ -18,22 +18,20 @@ def trans1():
 def test_block():
     index = 99999
     timestamp = datetime.now()
-    trans = Transaction(
-                PYCHAIN_PUBKEY,
-                PYCHAIN_PUBKEY,
-                "Test block",
-                1000,
-            )
-    data = {"proof-of-work": 9, "transaction": trans}
+    trans = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY, "Test block", 1000)
     previous_hash = "test block hash"
-    block = Block(index, timestamp, data, previous_hash)
+    block = Block(index, timestamp, previous_hash)
+    block + trans
     assert block.index == 99999
     assert isinstance(block.timestamp, datetime)
-    assert isinstance(block.data, dict)
-    assert block.data["proof-of-work"] == 9
-    assert isinstance(block.data["transaction"], Transaction)
+    assert isinstance(block.transactions, list)
+    assert isinstance(block.transactions[0], Transaction)
+    assert len(block) == 1
+    assert block.transactions[0].validate == True
     assert block.previous_hash == "test block hash"
     assert len(block.hash) == 64
+    with pytest.raises(ValueError):
+        block.add(trans)
 
 
 def test_blockchain(pc):
