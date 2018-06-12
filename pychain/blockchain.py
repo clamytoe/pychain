@@ -56,17 +56,10 @@ class Blockchain:
     def validate_chain(self):
         previous_block = None
         for block in self.blockchain:
-            print(f"CHECKING BLOCK #{block.index}: [{len(block)}]")
-            print(f"BLOCK #{block.index}: {block.hash}")
-            print(f"PBLOCK: {block.previous_hash}")
             if block.transactions[0]["desc"] == "Genesis block":
-                print("Found Genesis Block")
-                print(f"GENESIS #{block.index}: {block.hash}")
                 previous_block = block
             else:
                 # check that the hash of the current block is valid
-                print(f"Previous hash: {previous_block.hash}")
-                print(f"Block #{block.index} has: {block.hash}")
                 if block.previous_hash != previous_block.hash:
                     return False
                 # set the currently checked block as the previous one
