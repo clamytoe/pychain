@@ -55,10 +55,10 @@ def test_blockchain(pc):
 
 def test_transaction(trans1):
     assert isinstance(trans1, Transaction)
-    assert trans1.sender == PYCHAIN_PUBKEY
-    assert trans1.receiver == PYCHAIN_PUBKEY
-    assert trans1.comment == "Test block #1"
-    assert trans1.amount == 10
+    assert trans1.user_id == PYCHAIN_PUBKEY
+    assert trans1.subject_id == PYCHAIN_PUBKEY
+    assert trans1.desc == "Test block #1"
+    assert trans1.payload == 10
 
 
 def test_add_block(pc, trans1):
