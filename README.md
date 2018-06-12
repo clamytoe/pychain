@@ -18,7 +18,7 @@ The *Transaction Class* will be very generic so that it can be used in any appli
 * **payload**: A *json* object with all of the details of the transaction.
 
 ## Block Class
-The *Block Class* will take your transaction object and add it to the *Blockchain*. The *Block* objects will have the following features:
+The *Block Class* will take your transaction object and adds it to the *Block*. The *Block* objects will have the following features:
 
 * **index**: ID for the *Block*
 * **timestamp**: Creation date
