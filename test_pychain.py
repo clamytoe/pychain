@@ -27,7 +27,7 @@ def test_block():
     assert isinstance(block.transactions, list)
     assert isinstance(block.transactions[0], Transaction)
     assert len(block) == 1
-    assert block.transactions[0].validate == True
+    assert block.transactions[0].validate is True
     assert block.previous_hash == "test block hash"
     assert len(block.hash) == 64
     with pytest.raises(ValueError):
