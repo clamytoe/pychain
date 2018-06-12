@@ -1,0 +1,7 @@
+name: pychain
+channels:
+  - defaults
+dependencies:
+  - flake8=3.5.0
+  - pytest=3.5.0
+  - python=3.6.5

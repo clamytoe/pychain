@@ -6,6 +6,8 @@ python:
 env:
   matrix:
     - TOXENV=py
+install:
+  - pip install -r requirements.txt
 script:
   - flake8 . --max-line-length=120
   - isort
