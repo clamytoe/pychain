@@ -11,7 +11,6 @@ REQUIRE_POW = False
 
 
 class Block:
-
     def __init__(self, index, timestamp, previous_hash):
         self.index = index
         self.timestamp = timestamp
@@ -22,8 +21,9 @@ class Block:
         if len(self) > 0:
             for trans in self.transactions:
                 if trans.trans_id == transaction.trans_id:
-                    raise ValueError(f"Transaction #{transaction.trans_id} "
-                                     f"already exists.")
+                    raise ValueError(
+                        f"Transaction #{transaction.trans_id} already exists."
+                    )
             self.transactions.append(transaction)
         else:
             self.transactions = [transaction]
@@ -45,12 +45,11 @@ class Block:
         return h.hexdigest()
 
     def __repr__(self):
-        return f"Block({self.index}, {self.timestamp}, {self.transactions}, " \
+        return f"Block({self.index}, {self.timestamp}, {self.transactions}, "\
                f"{self.previous_hash})"
 
 
 class Blockchain:
-
     def __init__(self, blockchain=None, nodes=None, transactions=None):
         self.blockchain = blockchain if blockchain else []
         self.nodes = nodes if nodes else []
@@ -91,12 +90,8 @@ class Blockchain:
         # Manually construct a block with
         # index zero and arbitrary previous hash
         if not self.blockchain:
-            trans = Transaction(
-                PYCHAIN_PUBKEY,
-                PYCHAIN_PUBKEY,
-                "Genesis block",
-                1000,
-            )
+            trans = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY,
+                                "Genesis block", 1000)
             self.add_block(trans)
 
     def validate_chain(self):
@@ -152,8 +147,7 @@ class Blockchain:
     def other_chains(self):
         nodes_ = [
             json.loads(
-                requests.get(url + "/blocks").content
-            ) for url in self.nodes
+                requests.get(url + "/blocks").content) for url in self.nodes
         ]
         return nodes_
 
@@ -163,7 +157,6 @@ class Blockchain:
 
 
 class Transaction:
-
     def __init__(self, user_id, subject_id, desc, payload):
         self.trans_id = datetime.now().toordinal()
         self.user_id = user_id
@@ -186,10 +179,14 @@ class Transaction:
     @property
     def validate(self):
         trans = json.loads(self.trans)
-        return True if (
-            trans["id"] and
-            trans["from"] and
-            trans["to"] and
-            trans["desc"] and
-            trans["data"]
-        ) else False
+        return (
+            True
+            if (
+                trans["id"]
+                and trans["from"]
+                and trans["to"]
+                and trans["desc"]
+                and trans["data"]
+            )
+            else False
+        )
