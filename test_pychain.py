@@ -43,12 +43,12 @@ def test_blockchain(pc):
     assert pc.other_chains == []
     assert isinstance(pc.blockchain[0], Block)
     assert pc.blockchain[0].index == 0
-    assert isinstance(pc.blockchain[0].data, dict)
-    assert pc.blockchain[0].data["proof-of-work"] == 9
-    assert pc.blockchain[0].data["transaction"]["comment"] == "Genesis block"
-    assert pc.blockchain[0].data["transaction"]["amount"] == 1000
-    assert pc.blockchain[0].data["transaction"]["from"] == PYCHAIN_PUBKEY
-    assert pc.blockchain[0].data["transaction"]["to"] == PYCHAIN_PUBKEY
+    assert isinstance(pc.blockchain[0].transactions, list)
+    assert isinstance(pc.blockchain[0].transactions[0], dict)
+    assert pc.blockchain[0].transactions[0]["desc"] == "Genesis block"
+    assert pc.blockchain[0].transactions[0]["data"] == 1000
+    assert pc.blockchain[0].transactions[0]["from"] == PYCHAIN_PUBKEY
+    assert pc.blockchain[0].transactions[0]["to"] == PYCHAIN_PUBKEY
 
 
 def test_transaction(trans1):
@@ -60,15 +60,15 @@ def test_transaction(trans1):
 
 
 def test_add_block(pc, trans1):
-    pc.add_block(pc.proof_of_work, trans1)
+    pc.add_block(trans1)
     assert len(pc.blockchain) == 2
     assert isinstance(pc.blockchain[1], Block)
 
 
 def test_validate_chain(pc, trans1):
-    pc.add_block(pc.proof_of_work, trans1)
+    pc.add_block(trans1)
     trans2 = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY, "Test block #2", 5)
-    pc.add_block(pc.proof_of_work, trans2)
+    pc.add_block(trans2)
     trans3 = Transaction(PYCHAIN_PUBKEY, PYCHAIN_PUBKEY, "Test block #3", 15)
-    pc.add_block(pc.proof_of_work, trans3)
+    pc.add_block(trans3)
     assert pc.validate_chain() is True

@@ -16,7 +16,6 @@ class Block:
         self.timestamp = timestamp
         self.previous_hash = previous_hash
         self.transactions = []
-        self.hash = self.hash_block()
 
     def __add__(self, transaction):
         if len(self) > 0:
@@ -34,7 +33,8 @@ class Block:
     def add(self, transaction):
         self.__add__(transaction)
 
-    def hash_block(self):
+    @property
+    def hash(self):
         key = PYCHAIN_PUBKEY.encode()
         h = hashlib.blake2b(digest_size=AUTH_SIZE, key=key)
         payload = f"{self.index},{self.timestamp},{self.transactions}," \
@@ -60,14 +60,14 @@ class Blockchain:
     def __len__(self):
         return len(self.blockchain)
 
-    def add_block(self, proof, transaction):
-        valid = transaction.validate()
+    def add_block(self, transaction):
+        valid = transaction.validate
         if valid:
             trans = json.loads(transaction.trans)
-            data = {"proof-of-work": proof, "transaction": trans}
             index = 0 if len(self.blockchain) == 0 else self.next_index
             prev_hash = 0 if len(self.blockchain) == 0 else self.previous_hash
-            block = Block(index, datetime.now(), data, prev_hash)
+            block = Block(index, datetime.now(), prev_hash)
+            block.add(trans)
             self.blockchain.append(block)
             self.transactions.append(trans)
 
@@ -90,31 +90,32 @@ class Blockchain:
         # Manually construct a block with
         # index zero and arbitrary previous hash
         if not self.blockchain:
-            proof = self.proof_of_work
             trans = Transaction(
                 PYCHAIN_PUBKEY,
                 PYCHAIN_PUBKEY,
                 "Genesis block",
                 1000,
             )
-            self.add_block(proof, trans)
+            self.add_block(trans)
 
     def validate_chain(self):
+        previous_block = None
         for block in self.blockchain:
-            # skip over genesis block but set it as the previous block
-            if block.data["transaction"]["comment"] == "Genesis block":
+            print(f"CHECKING BLOCK #{block.index}: [{len(block)}]")
+            print(f"BLOCK #{block.index}: {block.hash}")
+            print(f"PBLOCK: {block.previous_hash}")
+            if block.transactions[0]["desc"] == "Genesis block":
+                print("Found Genesis Block")
+                print(f"GENESIS #{block.index}: {block.hash}")
                 previous_block = block
-                continue
             else:
                 # check that the hash of the current block is valid
-                if block.hash != block.hash_block():
-                    return False
-                # check that the previous_block's hash is the same as the hash
-                # entry of this block
+                print(f"Previous hash: {previous_block.hash}")
+                print(f"Block #{block.index} has: {block.hash}")
                 if block.previous_hash != previous_block.hash:
                     return False
-            # set the currently checked block as the previous one
-            previous_block = block
+                # set the currently checked block as the previous one
+                previous_block = block
         return True
 
     @property
@@ -158,10 +159,6 @@ class Blockchain:
     @property
     def previous_hash(self):
         return self.last_block.hash
-
-    @property
-    def proof_of_work(self):
-        return self.last_proof if REQUIRE_POW else 9
 
 
 class Transaction:
