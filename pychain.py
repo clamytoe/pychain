@@ -41,6 +41,9 @@ class Blockchain:
 
         self.create_genesis_block()
 
+    def __len__(self):
+        return len(self.blockchain)
+
     def add_block(self, proof, transaction):
         valid = transaction.validate()
         if valid:
