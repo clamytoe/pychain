@@ -24,7 +24,9 @@ class Block:
                 if trans.trans_id == transaction.trans_id:
                     raise ValueError(f"Transaction #{transaction.trans_id} "
                                      f"already exists.")
-        self.transactions.append(transaction)
+            self.transactions.append(transaction)
+        else:
+            self.transactions = [transaction]
 
     def __len__(self):
         return len(self.transactions)
