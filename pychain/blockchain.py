@@ -1,52 +1,11 @@
-import hashlib
 import json
 from datetime import datetime
 
 import requests
 
-from config import PYCHAIN_PUBKEY
-
-AUTH_SIZE = 32
-REQUIRE_POW = False
-
-
-class Block:
-    def __init__(self, index, timestamp, previous_hash):
-        self.index = index
-        self.timestamp = timestamp
-        self.previous_hash = previous_hash
-        self.transactions = []
-
-    def __add__(self, transaction):
-        if len(self) > 0:
-            for trans in self.transactions:
-                if trans.trans_id == transaction.trans_id:
-                    raise ValueError(
-                        f"Transaction #{transaction.trans_id} already exists."
-                    )
-            self.transactions.append(transaction)
-        else:
-            self.transactions = [transaction]
-
-    def __len__(self):
-        return len(self.transactions)
-
-    def add(self, transaction):
-        self.__add__(transaction)
-
-    @property
-    def hash(self):
-        key = PYCHAIN_PUBKEY.encode()
-        h = hashlib.blake2b(digest_size=AUTH_SIZE, key=key)
-        payload = f"{self.index},{self.timestamp},{self.transactions}," \
-                  f"{self.previous_hash} "
-        h.update(payload.encode())
-
-        return h.hexdigest()
-
-    def __repr__(self):
-        return f"Block({self.index}, {self.timestamp}, {self.transactions}, "\
-               f"{self.previous_hash})"
+from pychain.block import Block
+from pychain.config import PYCHAIN_PUBKEY
+from pychain.transaction import Transaction
 
 
 class Blockchain:
@@ -116,7 +75,7 @@ class Blockchain:
 
     @property
     def get_blocks(self):
-        blocklist = ""
+        block_list = ""
 
         for block in self.blockchain:
             assembled = json.dumps(
@@ -127,9 +86,9 @@ class Blockchain:
                     "hash": block.hash,
                 }
             )
-            blocklist += assembled
+            block_list += assembled
 
-        return blocklist
+        return block_list
 
     @property
     def last_block(self):
@@ -154,39 +113,3 @@ class Blockchain:
     @property
     def previous_hash(self):
         return self.last_block.hash
-
-
-class Transaction:
-    def __init__(self, user_id, subject_id, desc, payload):
-        self.trans_id = datetime.now().toordinal()
-        self.user_id = user_id
-        self.subject_id = subject_id
-        self.desc = desc
-        self.payload = payload
-
-    @property
-    def trans(self):
-        return json.dumps(
-            {
-                "id": self.trans_id,
-                "from": self.user_id,
-                "to": self.subject_id,
-                "desc": self.desc,
-                "data": self.payload,
-            }
-        )
-
-    @property
-    def validate(self):
-        trans = json.loads(self.trans)
-        return (
-            True
-            if (
-                trans["id"]
-                and trans["from"]
-                and trans["to"]
-                and trans["desc"]
-                and trans["data"]
-            )
-            else False
-        )

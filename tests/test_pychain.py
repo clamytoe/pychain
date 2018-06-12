@@ -1,8 +1,11 @@
 from datetime import datetime
 
 import pytest
-from pychain import Block, Blockchain, Transaction
-from config import PYCHAIN_PUBKEY
+
+from pychain.block import Block
+from pychain.blockchain import Blockchain
+from pychain.config import PYCHAIN_PUBKEY
+from pychain.transaction import Transaction
 
 
 @pytest.fixture
