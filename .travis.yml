@@ -1,0 +1,13 @@
+language: python
+cache:
+  - pip
+python:
+  - 3.6
+env:
+  matrix:
+    - TOXENV=py
+script:
+  - flake8 . --max-line-length=120
+  - isort
+  - tox
+  - python -m pytest -v

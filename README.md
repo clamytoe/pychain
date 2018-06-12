@@ -3,6 +3,14 @@
 
 **NOTE**: Still a work in progress.
 
+![Python version][python-version]
+[![Build Status][travis-image]][travis-url]
+[![BCH compliance][bch-image]][bch-url]
+[![GitHub issues][issues-image]][issues-url]
+[![GitHub forks][fork-image]][fork-url]
+[![GitHub Stars][stars-image]][stars-url]
+[![License][license-image]][license-url]
+
 # My vision for pychain
 My vision for this project is to have it be used to enable everyone to use blockchain technology to ensure the entegrity of any process that they are responsible for.
 
@@ -39,3 +47,17 @@ This is what it will be able to do:
 * **Validate *Blocks***
 * **Display the *Blockchain*** for review
 * **Consensus** of the most current *Blockchain* with all other nodes on the network, if any
+
+[python-version]:https://img.shields.io/badge/python-3.6%2B-brightgreen.svg
+[travis-image]:https://travis-ci.org/clamytoe/pychain.svg?branch=master
+[travis-url]:https://travis-ci.org/clamytoe/pychain
+[bch-image]:https://bettercodehub.com/edge/badge/clamytoe/pychain?branch=master
+[bch-url]:https://bettercodehub.com/
+[issues-image]:https://img.shields.io/github/issues/clamytoe/pychain.svg
+[issues-url]:https://github.com/clamytoe/pychain/issues
+[fork-image]:https://img.shields.io/github/forks/clamytoe/pychain.svg
+[fork-url]:https://github.com/clamytoe/pychain/network
+[stars-image]:https://img.shields.io/github/stars/clamytoe/pychain.svg
+[stars-url]:https://github.com/clamytoe/pychain/stargazers
+[license-image]:https://img.shields.io/github/license/clamytoe/pychain.svg
+[license-url]:https://github.com/clamytoe/pychain/blob/master/LICENSE
